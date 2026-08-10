@@ -2,7 +2,7 @@
 
 **App de finanzas personales local-first — sin backend, sin base de datos externa, sin que tus datos financieros salgan nunca de tu navegador.**
 
-![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8) ![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E) ![No Build Step](https://img.shields.io/badge/Build%20Step-None-success) ![LocalStorage](https://img.shields.io/badge/Storage-100%25%20Local-blue) ![Claude](https://img.shields.io/badge/AI-Claude%20Vision-CC785C)
+![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8) ![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E) ![No Build Step](https://img.shields.io/badge/Build%20Step-None-success) ![LocalStorage](https://img.shields.io/badge/Storage-100%25%20Local-blue) ![Claude](https://img.shields.io/badge/AI-Claude%20Vision-CC785C) ![Vercel](https://img.shields.io/badge/Deploy-Vercel%20Edge-black)
 
 > Este repositorio es una vitrina del proyecto. El código fuente es privado — es una app de uso personal que maneja mis finanzas reales, así que el repo de desarrollo no es público. Aquí documento las decisiones técnicas y lo que hace.
 
@@ -27,6 +27,15 @@ Una PWA instalable que cubre tracking de gastos, gestión de deudas con calculad
 - **Reconstrucción histórica desde snapshots**: en vez de depender de que actualices manualmente cada saldo todos los meses, el sistema reconstruye el historial completo caminando hacia atrás desde el último snapshot manual a través de las transacciones ya importadas, y proyecta el saldo actual hacia adelante cuando hay transacciones más recientes que el último snapshot confirmado.
 - **Motor de gráficos propio**, sin librería externa — línea, barra y donut hechos a mano, con eje de tiempo real (no por índice) para que el hover/tooltip sea preciso.
 
+## 🚀 Despliegue y seguridad
+
+La app corre además como beta privada instalada en iOS ("Agregar a pantalla de inicio"), lo cual trajo decisiones que van más allá del código de la app en sí:
+
+- **Deploy como sitio estático puro en Vercel**, sin build step ni framework — el mismo HTML/CSS/JS plano de siempre, servido tal cual. El proyecto convive en el mismo dominio raíz que otro producto propio en producción (un marketplace en Next.js), como proyecto de Vercel completamente separado con su propio subdominio, sin tocar el DNS, la configuración ni los registros de email de ese otro proyecto.
+- **Gate de acceso vía Edge Middleware**, con un giro real de diagnóstico en vez de una decisión de manual: la primera versión usaba HTTP Basic Auth nativo. Probado en el dispositivo real, el diálogo nativo no se integraba con el Llavero/AutoFill de iOS dentro de una PWA instalada en modo standalone (límite conocido de WKWebView) — pedía login en cada apertura sin poder guardar la contraseña. Se reemplazó por una página de login propia servida desde el mismo middleware, con cookie de sesión firmada por HMAC-SHA256 (Web Crypto nativo, sin dependencias externas), que sí obtiene AutoFill en ambos modos.
+- **CORS del proxy de IA restringido a un allowlist explícito** (antes abierto a cualquier origen) una vez que la app tuvo un dominio de producción real al que atarlo.
+- Un bug de "por qué no toma la variable nueva" resultó ser que Vercel no reinyecta variables de entorno en un deployment que ya existe — cada uno queda con el snapshot de configuración de cuando se creó, así que hace falta un redeploy explícito. Encontrado comparando el estado real del dashboard contra el comportamiento esperado, no asumiendo la causa de entrada.
+
 ## ✨ Funcionalidades destacadas
 
 - **Dashboard de resumen** con KPIs del mes, navegación mes a mes, y un donut de gastos por categoría completamente clickeable (perfora directo a la lista de transacciones ya filtrada).
@@ -46,7 +55,7 @@ Una PWA instalable que cubre tracking de gastos, gestión de deudas con calculad
 
 ## 👨‍💻 Mi rol
 
-Diseño y desarrollo end-to-end en solitario: arquitectura local-first, los tres pipelines de importación (spreadsheet, IA multimodal, Gmail), motor de cálculo financiero (amortización, proyección de saldos), y motor de gráficos propio.
+Diseño y desarrollo end-to-end en solitario: arquitectura local-first, los tres pipelines de importación (spreadsheet, IA multimodal, Gmail), motor de cálculo financiero (amortización, proyección de saldos), motor de gráficos propio, y el deploy/auth de producción (Vercel, Edge Middleware, DNS de subdominio sin afectar otro proyecto en el mismo dominio).
 
 ## 🛣️ Roadmap
 
