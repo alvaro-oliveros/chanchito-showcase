@@ -1,4 +1,4 @@
-# 💰 Personal Finance PWA
+# 💰 Chanchito
 
 **App de finanzas personales local-first — sin backend, sin base de datos externa, sin que tus datos financieros salgan nunca de tu navegador.**
 
