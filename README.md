@@ -10,13 +10,13 @@
 
 _Todas las cifras de estas capturas son datos de ejemplo generados para esta demo — no son mis finanzas reales._
 
-![Dashboard](docs/screenshots/01-dashboard.jpg)
-_Resumen mensual, gasto por categoría, y proyección de saldo a 45 días._
+![Dashboard](docs/screenshots/01-dashboard.png)
+_Resumen mensual con gasto de los últimos 6 meses y gasto por categoría._
 
-![Plan de deudas](docs/screenshots/02-plan-deudas.jpg)
+![Plan de deudas](docs/screenshots/02-plan-deudas.png)
 _Calculadora de pago y simulador de estrategia "avalancha" por deuda._
 
-![Revisión de importación](docs/screenshots/03-importar-revision.jpg)
+![Revisión de importación](docs/screenshots/03-importar-revision.png)
 _Toda importación (spreadsheet, IA, Gmail) pasa por esta pantalla editable antes de escribir a la base — ninguna automatización escribe directo._
 
 ## 💡 El problema
