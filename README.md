@@ -10,14 +10,37 @@
 
 _Todas las cifras de estas capturas son datos de ejemplo generados para esta demo — no son mis finanzas reales._
 
+<div align="center">
+
 ![Dashboard](docs/screenshots/01-dashboard.png)
-_Resumen mensual con gasto de los últimos 6 meses y gasto por categoría._
+
+_Resumen mensual con progreso de presupuestos por categoría y análisis de impacto en deudas_
+
+</div>
+
+<div align="center">
 
 ![Plan de deudas](docs/screenshots/02-plan-deudas.png)
-_Calculadora de pago y simulador de estrategia "avalancha" por deuda._
+
+_Análisis detallado: "Si reduces X en 20%, pagas deudas Y meses antes" con escenarios de reducción por categoría_
+
+</div>
+
+<div align="center">
 
 ![Revisión de importación](docs/screenshots/03-importar-revision.png)
-_Toda importación (spreadsheet, IA, Gmail) pasa por esta pantalla editable antes de escribir a la base — ninguna automatización escribe directo._
+
+_Toda importación (spreadsheet, IA, Gmail) pasa por esta pantalla editable antes de escribir a la base_
+
+</div>
+
+<div align="center">
+
+![Presupuesto con conversión](docs/screenshots/04-categoria-presupuesto.png)
+
+_Conversión de moneda en tiempo real al configurar presupuestos (tipear $600 → muestra ≈ S/2,250)_
+
+</div>
 
 ## 💡 El problema
 
@@ -59,9 +82,10 @@ La app corre además como beta privada instalada en iOS ("Agregar a pantalla de 
 ## ✨ Funcionalidades destacadas
 
 - **Dashboard de resumen** con KPIs del mes, navegación mes a mes, y un donut de gastos por categoría completamente clickeable (perfora directo a la lista de transacciones ya filtrada).
+- **Presupuestos por categoría con conexión visual a deudas**: límite mensual por categoría con progress bars de 3 niveles (verde < 80%, amarillo 80-100%, rojo > 100%) y **análisis de impacto en deudas** — "Si reduces Restaurante 🍽️ en 20%, pagas deudas 3 meses antes". El sistema calcula "budget slack" (total − categorías = disponible para pagar deudas extra) y simula escenarios de reducción (10%, 20%, 30%) para las top 5 categorías con mayor presupuesto. Incluye conversión de moneda en tiempo real al configurar presupuestos.
 - **Gestión de deudas**: saldo, TEA, pago mínimo y próxima fecha por cada deuda, con soporte para líneas de crédito compartidas entre monedas.
 - **Calculadora de plan de pago**: dado un pago mensual, calcula meses hasta liquidar, interés total, y advierte si el pago propuesto ni siquiera cubre el interés (nunca se liquidaría).
-- **Simulador de estrategia "avalancha"**: dado un presupuesto mensual total, ordena el pago óptimo entre todas las deudas priorizando la de mayor tasa. Los cálculos se verificaron a mano contra la fórmula cerrada de amortización de préstamos.
+- **Simulador de estrategia "avalancha"**: dado un presupuesto mensual total, ordena el pago óptimo entre todas las deudas priorizando la de mayor tasa. Los cálculos se verificaron a mano contra la fórmula cerrada de amortización de préstamos. Ahora pre-llenado con el presupuesto total configurado y con breakdown visual del presupuesto (total → categorías → disponible para deudas).
 - **Patrimonio neto** que combina cuentas, deudas y "otros activos" (cualquier cosa que no sea cuenta bancaria ni deuda — colecciones, vehículos, propiedades) en un solo número, en el tiempo.
 - **Colecciones con detalle ítem por ítem y foto**, no solo un número tipeado a mano — importa el CSV de colección de un marketplace de cartas coleccionables (parser propio, separado del pipeline de transacciones bancarias) y genera el snapshot de valor total solo, categorizando automáticamente producto sellado vs. cartas sueltas.
 - **Tres métodos de importación**: archivos exportados por el banco (CSV/Excel), foto o PDF vía IA con detección automática de a qué cuenta corresponde, y sincronización directa desde el correo (Gmail API, autenticado 100% desde el navegador sin backend — un Client ID de OAuth no es secreto, así que ahí sí tiene sentido no usar proxy). Un bug real de este importador es buen ejemplo de por qué prefiero verificar contra datos reales antes de corregir algo a ciegas: un parser fallaba en silencio al extraer el destinatario de transferencias, y la hipótesis inicial (basada en un comentario en el propio código) resultó ser incorrecta — solo se confirmó la causa real, y se validó el fix, trayendo varios correos reales de prueba (sin importarlos) con una función de debug hecha para eso. Otro caso real ahí mismo: una transferencia entre dos cuentas propias solo actualizaba el saldo de origen, nunca el de destino, porque el banco solo manda un correo por transferencia (no uno por cada lado). Investigarlo destapó algo más de fondo — el banco puede tener dos cuentas reales con la misma etiqueta genérica, distinguibles solo por los últimos 4 dígitos, algo que el sistema no contemplaba — así que terminé rediseñando la resolución de cuenta para identificar por esos últimos 4 dígitos (aprendidos una sola vez, recordados después) en vez de por la etiqueta ambigua, y generando ambos lados de una transferencia interna en vez de uno solo.
