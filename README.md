@@ -1,60 +1,148 @@
-# 🐷 Chanchito
+<p align="center">
+  <img src="logo.png" alt="Chanchito Logo" width="160">
+</p>
 
-**App de finanzas personales local-first — sin backend, sin base de datos externa, sin que tus datos financieros salgan nunca de tu navegador.**
+<h1 align="center">Chanchito</h1>
 
-![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8) ![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E) ![No Build Step](https://img.shields.io/badge/Build%20Step-None-success) ![LocalStorage](https://img.shields.io/badge/Storage-100%25%20Local-blue) ![OCR+AI](https://img.shields.io/badge/Import-OCR%20%2B%20Claude%20Haiku-CC785C)
+<p align="center">
+  <strong>App de finanzas personales local-first — sin backend, sin base de datos externa, con privacidad total y respaldos cifrados.</strong>
+</p>
 
-> Este repositorio es una vitrina del proyecto. El código fuente es privado — es una app de uso personal que maneja mis finanzas reales, así que el repo de desarrollo no es público. Aquí documento las decisiones técnicas y lo que hace.
-
-## 📸 Capturas
-
-_🚧 La UI todavía está en desarrollo activo — capturas próximamente. (Cuando estén listas: `docs/screenshots/01-dashboard.png`, `02-plan-deudas.png`, `03-importar-revision.png`, con montos/saldos difuminados antes de publicar.)_
-
-## 💡 El problema
-
-Los trackers de gastos genéricos (Mint, YNAB, hojas de cálculo) no cubren bien el caso de tener cuentas en distintas monedas y países, deudas con tasas de interés que hay que simular para decidir cómo pagarlas, y colecciones (cartas coleccionables) que también son parte del patrimonio real. Construí una app a medida para mi propio caso de uso, con control total sobre dónde viven mis datos.
-
-## ✅ La solución
-
-Una PWA instalable de un solo usuario que va bastante más allá de un tracker de gastos: también es un tracker de deudas con calculadora de pago y simulador de estrategia "avalancha", un planificador con calendario financiero y simulador predictivo "¿qué pasa si...?", y un dashboard de patrimonio neto consolidado en USD que incluye colecciones como activo no financiero.
-
-## 🏗️ Decisiones de arquitectura
-
-- **Local-first de verdad, no solo de palabra.** Sin framework, sin bundler, sin paso de build: HTML/CSS/JS planos cargados directamente. Todo el estado vive en `localStorage`. Esto no es una limitación técnica — es una decisión deliberada: mis datos financieros no tocan ningún servidor.
-- **Una sola excepción a la regla, justificada:** el importador de fotos/PDFs escaneados necesita OCR e IA para leer capturas de apps bancarias, lo cual requiere credenciales que no pueden vivir en el cliente. Esa única funcionalidad pasa por un pequeño proxy serverless (Cloudflare Worker) — la única pieza de "backend" en todo el proyecto, y solo toca las imágenes de forma efímera, nunca las persiste.
-- **IA como último recurso, no como default.** El pipeline de importación de documentos prueba primero un parser local (PDFs con texto nativo), luego OCR dedicado (Google Vision) para escaneados, y solo si eso falla recurre a un modelo de lenguaje (Claude Haiku) — y nunca se llama automáticamente, siempre con confirmación explícita. Prioriza costo, velocidad y privacidad sobre usar IA por defecto.
-- **Nunca confiar ciegamente en una extracción automática.** Todos los métodos de importación (spreadsheet, IA, Gmail) pasan por una pantalla de revisión editable con detección de duplicados antes de guardar nada. Ninguna automatización escribe directo a la base de datos.
-- **PDFs procesados 100% en el navegador**, incluyendo PDFs con contraseña — la contraseña nunca sale del cliente.
-- **Reconstrucción histórica desde snapshots**: el sistema reconstruye el historial completo caminando hacia atrás desde el último snapshot manual a través de las transacciones ya importadas, y proyecta el saldo hacia adelante cuando hay transacciones más recientes que el último snapshot confirmado.
-- **Bloqueo local con PIN**, con hash PBKDF2-SHA256 y salt aleatorio (nunca se guarda el PIN en texto plano) — pensado como barrera de privacidad ante acceso casual al dispositivo, no como cifrado del almacenamiento.
-- **Motor de gráficos propio**, sin librería externa — línea, barra y donut hechos a mano, con eje de tiempo real para que el hover/tooltip sea preciso.
-- **Cobertura de tests** sobre las piezas de mayor riesgo: calendario financiero y proyecciones, conciliación bancaria, motor de metas de ahorro, y pipeline de importación completo.
-
-## ✨ Funcionalidades destacadas
-
-- **Dashboard**: KPIs de flujo neto y presupuesto disponible, próximos compromisos a 14 días, gráfico de gasto de los últimos 6 meses, donut interactivo por categoría (clickeable, filtra transacciones), y proyección de saldo a 45 días con simulador predictivo en vivo.
-- **Transacciones**: búsqueda instantánea, filtros por cuenta/categoría/moneda, inbox de revisión rápida con badge en tiempo real para movimientos importados pendientes de confirmar, conciliación y vinculación de conversiones de moneda.
-- **Acceso rápido global**: botón universal para capturar gastos, ingresos o transferencias desde cualquier pantalla.
-- **Patrimonio**: cuentas con saldos proyectados y conciliación bancaria, deudas con TEA/APR y líneas compartidas, y patrimonio neto consolidado (cuentas + colecciones − deudas) con histórico.
-- **Plan**: calendario financiero con compromisos recurrentes y metas, simulador "¿qué pasa si...?" con diagnóstico de sobregiro, calculadora de metas de ahorro con ritmo de aporte sugerido, y simulador de estrategia "avalancha" para priorizar el pago de deudas por tasa de interés — verificado a mano contra la fórmula cerrada de amortización.
-- **Importación**: archivos del banco (CSV/Excel), foto o PDF con OCR/IA, y sincronización directa desde el correo (Gmail, autenticado 100% desde el navegador sin backend), con reglas de categorización editables desde la UI. Cobertura de bancos en expansión.
-- **Seguridad**: bloqueo local con PIN, bloqueo automático por inactividad, y backup cifrado a Google Drive.
-
-## 🛠️ Stack técnico
-
-**Cliente:** JavaScript vanilla (sin framework), HTML/CSS planos, `localStorage` como única base de datos, `pdf.js` para render de PDF en cliente.
-**IA/OCR:** Google Vision OCR para documentos escaneados, Claude Haiku (API de Anthropic) con tool-use forzado como último recurso para extracción estructurada.
-**Backend (mínimo, solo para el importador por IA):** Cloudflare Worker como proxy que protege las credenciales.
-**Auth de importación por correo:** Google Identity Services (OAuth) directo desde el navegador, sin backend.
-
-## 👨‍💻 Mi rol
-
-Diseño y desarrollo end-to-end en solitario: arquitectura local-first, los pipelines de importación (spreadsheet, OCR/IA multimodal, Gmail), motores de cálculo financiero (amortización, proyección de saldos, conciliación, metas), motor de gráficos propio, y la suite de tests sobre la lógica financiera.
-
-## 🛣️ Roadmap
-
-Ampliar cobertura de bancos y tarjetas soportadas en la sincronización automática por correo, y explorar extracción de texto real de PDF (en vez de renderizado a imagen) cuando el documento ya trae una capa de texto nativa.
+<p align="center">
+  <img src="https://img.shields.io/badge/PWA-Installable-5A0FC8?style=flat-square" alt="PWA">
+  <img src="https://img.shields.io/badge/JavaScript-Vanilla%20(No%20Framework)-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="Vanilla JS">
+  <img src="https://img.shields.io/badge/Build%20Step-None%20(100%25%20Static)-success?style=flat-square" alt="No Build Step">
+  <img src="https://img.shields.io/badge/Storage-100%25%20Local%20(localStorage)-blue?style=flat-square" alt="LocalStorage">
+  <img src="https://img.shields.io/badge/Import-OCR%20%2B%20Claude%20Haiku%20%2B%20Gmail-CC785C?style=flat-square" alt="Import Methods">
+  <img src="https://img.shields.io/badge/Security-PBKDF2%20PIN%20%2B%20AES--GCM-darkgreen?style=flat-square" alt="Security">
+</p>
 
 ---
 
-**¿Quieres ver el código o el detalle técnico completo?** Puedo dar acceso puntual al repositorio privado para procesos de entrevista.
+> **Nota sobre este repositorio**: Este repositorio es una vitrina técnica (*showcase*) del proyecto. El código fuente de desarrollo es privado al tratarse de una aplicación de uso personal que gestiona mis finanzas reales. Aquí se documentan las decisiones de arquitectura, diseño de sistemas y características técnicas implementadas.
+
+---
+
+## 📸 Capturas de Pantalla
+
+<p align="center">
+  <img src="docs/screenshots/01-dashboard.png" alt="Dashboard Principal" width="800">
+  <br>
+  <em>Dashboard principal: KPIs de flujo neto y disponible, gráfico de gasto histórico, donut interactivo de categorías y proyección a 45 días.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/02-plan-deudas.png" alt="Planificador Financiero y Estrategia de Deudas" width="800">
+  <br>
+  <em>Planificador: calendario financiero unificado, metas de ahorro con "Págate Primero" y simulador de cascada de deudas por TEA (Avalancha).</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/04-categoria-presupuesto.png" alt="Detalle de Categoría y Presupuesto" width="800">
+  <br>
+  <em>Presupuestos mensuales: historial de ejecución, rollover automático y desglose de movimientos por categoría.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/03-importar-revision.png" alt="Inbox de Revisión Rápida de Transacciones" width="340">
+  <br>
+  <em>Inbox de revisión rápida: triage de movimientos importados antes de confirmarlos en base de datos.</em>
+</p>
+
+---
+
+## 💡 El Problema
+
+Los gestores de finanzas comerciales convencionales (Mint, YNAB, hojas de cálculo) presentan limitaciones estructurales para usuarios con necesidades particulares:
+1. **Multi-moneda real y multi-país**: Manejo simultáneo de cuentas en Soles (PEN) y Dólares (USD) con tipos de cambio dinámicos y transacciones cruzadas.
+2. **Deudas complejas y cálculo de intereses**: Simulación de amortización con TEA/APR real, pagos mínimos y optimización de pago en cascada.
+3. **Patrimonio integral (activos no bancarios)**: Inclusión de colecciones de alto valor (cartas coleccionables TCG, inventarios) dentro del cálculo de patrimonio neto.
+4. **Privacidad y soberanía de datos**: Garantía absoluta de que la información bancaria y financiera personal jamás resida en servidores de terceros.
+
+---
+
+## ✅ La Solución
+
+**Chanchito** es una Progressive Web App (PWA) construida a medida con arquitectura *local-first*, que integra:
+- **Control de Flujo de Caja y Presupuestos**: KPIs en tiempo real, desglose de gastos y asignación mensual con rollover.
+- **Planificador Financiero Predictivo**: Calendario unificado de compromisos, conciliación automática contra movimientos reales y simulador interactivo *"¿Qué pasa si...?"* con diagnóstico de sobregiro.
+- **Gestor de Deudas con Estrategia Avalancha**: Calculadora de amortización matemática verificada y simulador de cascada por costo financiero.
+- **Patrimonio Neto Consolidado**: Cuentas bancarias + Activos/Coleccionables − Deudas en USD con historial evolutivo.
+- **Pipeline de Importación Multimodal**: Extractos CSV/Excel bancarios, OCR/IA multimodal para capturas/PDFs y sincronización automática vía Gmail API.
+
+---
+
+## 🏗️ Decisiones de Arquitectura
+
+- **Local-first sin concesiones**: Cero frameworks, cero bundlers, cero build step. HTML/CSS/JS plano cargado directamente por el navegador. Todo el estado reside en `localStorage` (`finapp:v1`). Los datos financieros nunca abandonan el dispositivo.
+- **Sistema de Parsers Declarativos (*Declarative-first*)**: Los extractos de bancos se procesan mediante esquemas JSON declarativos (`declarative-parser-schema.js`) ejecutados por un motor agnóstico (`declarative-parser-engine.js`), permitiendo añadir soporte a nuevos formatos o generar parsers asistidos por IA sin tocar código fuente.
+- **Machine Learning Local en el Navegador**: Clasificador Naive Bayes local con tokenización bancaria, n-gramas y guardrails de seguridad (`category-classifier.js`) para sugerir categorías con alta precisión respetando siempre la precedencia de reglas declarativas del usuario.
+- **IA como último recurso, no como default**: El pipeline de documentos prioriza parsers locales (PDFs nativos), luego OCR dedicado (Google Vision), y únicamente ante capturas complejas recurre a LLM (Claude Haiku) con confirmación explícita del usuario.
+- **Revisión obligatoria antes de persistir**: Ningún método de importación escribe directamente en la base de datos. Todos los movimientos pasan por un *Inbox de Revisión Rápida* con detección inteligente de duplicados.
+- **Seguridad y Cifrado**:
+  - Bloqueo de app con PIN local de 6 dígitos mediante hash **PBKDF2-SHA256** con salt aleatorio de 100,000 iteraciones (`app-lock.js`).
+  - Exportación de backups cifrados con **AES-GCM (256 bits)** protegidos por contraseña, con integración directa a **Google Drive**.
+- **Motor de Gráficos Nativo**: Visualizaciones de línea, barra, donut y stacked trends renderizadas directamente en SVG/Canvas sin librerías externas pesadas.
+- **Deep Linking y Atajos de iOS**: Soporte para parámetros URL en la PWA que habilitan captura instantánea de gastos en 1 segundo vía el Botón de Acción del iPhone o Siri Shortcuts.
+
+---
+
+## ✨ Módulos y Funcionalidades
+
+### 1. Resumen (`Dashboard`)
+- KPIs de flujo neto y presupuesto disponible por moneda (PEN / USD / Combinado).
+- Widget de próximos compromisos a 14 días con resolución inteligente contra transacciones bancarias.
+- Gráfico de gasto histórico de 6/12 meses y donut interactivo con filtrado contextual.
+- Proyección de saldo a 45 días con alertas de umbral mínimo de seguridad.
+
+### 2. Transacciones (`Transactions`)
+- Búsqueda instantánea multi-criterio y filtros por cuenta, categoría y moneda.
+- Modo de **Selección Múltiple y Edición Masiva** para recategorización y gestión por lotes.
+- Inbox de triage con badge en tiempo real (`🔔 N por revisar`).
+- Conciliación contable por cuenta/moneda y vinculación de movimientos de cambio de divisas (FX).
+
+### 3. Patrimonio (`Accounts`)
+- **Cuentas**: Saldos calculados, reconciliación con extractos bancarios y gráficos de balance histórico.
+- **Deudas**: Monitoreo de líneas de crédito, cálculo de intereses reales (TEA/APR) y fechas de corte/pago.
+- **Patrimonio Neto**: Consolidación total de activos líquidos, inventarios coleccionables y pasivos.
+
+### 4. Plan (`Plan`)
+- **Calendario Financiero**: Vista Grid mensual y Agenda de compromisos recurrentes, cuotas de préstamos y metas de ahorro.
+- **Simulador "¿Qué pasa si...?"**: Evaluación de impacto de gastos extraordinarios con detección preventiva de sobregiro y sugerencia de fecha segura.
+- **Metas de Ahorro ("Págate Primero")**: Asignación prioritaria sobre el disponible mensual y cálculo de ritmo sugerido de ahorro.
+- **Simulador Avalancha**: Comparativa matemática de ahorro en intereses priorizando deudas por costo financiero.
+
+### 5. Configuración e Importación (`Import & Settings`)
+- **Importadores**: CSV/Excel declarativo, capturas/PDFs vía OCR/IA y sincronización directa con Gmail vía OAuth2 cliente.
+- **Generador de Parsers con IA**: Creación guiada de esquemas de extracción a partir de archivos de muestra.
+- **Gestión de Datos**: Calidad de datos, optimización de cuota de almacenamiento local y respaldos cifrados en Google Drive.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Capa | Tecnologías |
+| :--- | :--- |
+| **Frontend Core** | HTML5, CSS3 moderno (Custom Properties, Backdrop Filter, Safe Areas), JavaScript ES2022 Vanilla (sin frameworks ni bundlers) |
+| **Persistencia Local** | `localStorage` API con verificación de cuota e integridad referencial |
+| **Seguridad** | Web Crypto API (`PBKDF2`, `AES-GCM`, `SHA-256`), App Lock por inactividad y anti-destello |
+| **Integraciones & Auth** | Google Identity Services (OAuth2 en cliente para Gmail y Drive), Cloudflare Workers (Proxy serverless efímero para IA) |
+| **Procesamiento de Docs** | `pdf.js` (renderizado local), Google Vision OCR, Claude Haiku (Anthropic API con tool calling) |
+| **Testing** | Node.js Test Suite nativa (11 suites automatizadas cubriendo cálculo financiero, parsers, ML y seguridad) |
+
+---
+
+## 👨‍💻 Rol y Desarrollo
+
+Diseño y desarrollo end-to-end por **Álvaro Oliveros**:
+- Definición de arquitectura *local-first* y diseño de experiencia de usuario (UI/UX) móvil y desktop.
+- Implementación de los motores de cálculo financiero (amortización de deuda, proyección de flujo de caja, reconciliación contable y metas de ahorro).
+- Construcción del motor de parsers declarativos y clasificador de machine learning local.
+- Desarrollo de la suite completa de pruebas unitarias y de integración.
+
+---
+
+<p align="center">
+  <strong>¿Te interesa conocer más sobre la arquitectura o detalles técnicos?</strong><br>
+  Puedo facilitar acceso puntual al repositorio de desarrollo para procesos de entrevista técnica.
+</p>
