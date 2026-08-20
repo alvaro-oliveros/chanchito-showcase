@@ -25,28 +25,66 @@
 
 ## 📸 Capturas de Pantalla
 
+_Todas las cifras de estas capturas son datos sintéticos generados para demostración — no representan información financiera real._
+
 <p align="center">
   <img src="docs/screenshots/01-dashboard.png" alt="Dashboard Principal" width="800">
   <br>
-  <em>Dashboard principal: KPIs de flujo neto y disponible, gráfico de gasto histórico, donut interactivo de categorías y proyección a 45 días.</em>
+  <em><strong>1. Dashboard Principal</strong>: KPIs de flujo neto y disponible por moneda, widget de próximos compromisos a 14 días, gráfico de gastos históricos, donut interactivo por categoría y proyección de saldo a 45 días.</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/02-plan-deudas.png" alt="Planificador Financiero y Estrategia de Deudas" width="800">
+  <img src="docs/screenshots/02-plan-deudas.png" alt="Plan de Deudas y Estrategia Avalancha" width="800">
   <br>
-  <em>Planificador: calendario financiero unificado, metas de ahorro con "Págate Primero" y simulador de cascada de deudas por TEA (Avalancha).</em>
+  <em><strong>2. Plan de Deudas & Avalancha</strong>: Calculadora de amortización por tarjeta y simulador interactivo de cascada por TEA (Avalancha) con análisis de impacto de ahorro en presupuestos.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/03-importar-revision.png" alt="Inbox de Revisión Rápida de Transacciones" width="800">
+  <br>
+  <em><strong>3. Revisión Editable de Importación (OCR / IA / Gmail / CSV)</strong>: Triage de movimientos importados con detección visual de cuenta, advertencias de duplicados y validación aritmética de balance antes de confirmar.</em>
 </p>
 
 <p align="center">
   <img src="docs/screenshots/04-categoria-presupuesto.png" alt="Detalle de Categoría y Presupuesto" width="800">
   <br>
-  <em>Presupuestos mensuales: historial de ejecución, rollover automático y desglose de movimientos por categoría.</em>
+  <em><strong>4. Presupuestos con Conversión de Moneda en Vivo</strong>: Configuración de límites por categoría con rollover automático y conversión de tipo de cambio en tiempo real (PEN ↔ USD).</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/03-importar-revision.png" alt="Inbox de Revisión Rápida de Transacciones" width="340">
+  <img src="docs/screenshots/05-calendario-agenda.png" alt="Calendario Financiero Unificado y Agenda" width="800">
   <br>
-  <em>Inbox de revisión rápida: triage de movimientos importados antes de confirmarlos en base de datos.</em>
+  <em><strong>5. Calendario Financiero Unificado & Agenda</strong>: Vista mensual y agenda a 45 días con conciliación automática de pagos recurrentes, cuotas y compromisos.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/06-simulador-predictivo.png" alt="Simulador Predictivo ¿Qué pasa si...?" width="800">
+  <br>
+  <em><strong>6. Simulador Predictivo "¿Qué pasa si...?"</strong>: Evaluación de impacto en flujo de caja ante gastos extraordinarios hipotéticos con diagnóstico de sobregiro y sugerencia de fecha segura.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/07-transacciones-seleccion-masiva.png" alt="Transacciones con Selección Múltiple y Clasificación ML" width="800">
+  <br>
+  <em><strong>7. Transacciones & Selección Múltiple</strong>: Búsqueda instantánea, filtros combinados, sugerencias por Machine Learning local (✨) y modo de edición/borrado masivo en lote.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/08-patrimonio-colecciones.png" alt="Patrimonio Neto y Colecciones TCG" width="800">
+  <br>
+  <em><strong>8. Patrimonio Neto & Portafolio de Coleccionables</strong>: Consolidado en USD de cuentas, pasivos y activos coleccionables (cartas TCG) con carrusel visual de ítems de alto valor.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/09-metas-ahorro.png" alt="Metas de Ahorro y Págate Primero" width="800">
+  <br>
+  <em><strong>9. Metas de Ahorro & "Págate Primero"</strong>: Reservas de ahorro y fondos de emergencia con avance porcentual y cálculo automático de ritmo sugerido mensual.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/10-captura-rapida.png" alt="Acceso Rápido Global" width="800">
+  <br>
+  <em><strong>10. Acceso Rápido Global (+)</strong>: Modal optimizado para captura instantánea de gastos, ingresos y transferencias en un solo toque.</em>
 </p>
 
 ---
