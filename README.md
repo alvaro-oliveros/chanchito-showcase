@@ -172,7 +172,7 @@ Los gestores de finanzas comerciales convencionales (Mint, YNAB, hojas de cálcu
 
 ## 👨‍💻 Rol y Desarrollo
 
-Diseño y desarrollo end-to-end por **Álvaro Oliveros**:
+Diseño y desarrollo end-to-end por **Alvaro Oliveros**:
 - Definición de arquitectura *local-first* y diseño de experiencia de usuario (UI/UX) móvil y desktop.
 - Implementación de los motores de cálculo financiero (amortización de deuda, proyección de flujo de caja, reconciliación contable y metas de ahorro).
 - Construcción del motor de parsers declarativos y clasificador de machine learning local.
